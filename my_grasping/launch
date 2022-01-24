@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<launch>
+
+  <!-- Launch using AprilTag -->
+
+  <!-- Load robot -->
+  <include file="$(find panda_moveit_config)/launch/panda_control_moveit_rviz.launch">
+    <arg name="robot_ip" value="172.16.0.2"/>
+  </include>
+
+  <!-- Launch camera -->
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch"> 
+    <arg name="filters" default="pointcloud"/>
+    <arg name="depth_width" value="640"/>
+    <arg name="depth_height" value="480"/>
+    <arg name="depth_fps" value="30"/>
+    <arg name="color_width" value="640"/>
+    <arg name="color_height" value="480" />
+    <arg name="color_fps" value="30"/>
+  </include>
+
+  <!-- Start AprilTag Detection -->
+  <include file="$(find apriltag_ros)/launch/continuous_detection.launch"/>
+
+  <!-- Tf from End-effector to camera -->
+  <node pkg="tf" type="static_transform_publisher" name="end_effector_camera" args="0.0 0 0.06 0 -1.47 3.14 /panda_link8 /camera_link 100" />
+  <!-- Offset Tf from tag -->
+  <node pkg="tf" type="static_transform_publisher" name="arm_goal" args="-0.04 0 0.11 1.57 0 3.14 /tag_0 /arm_goal 100" />
+
+  <!--<node name="full_demo_test" output="screen" pkg="my_grasping" type="full_demo_test.py"/>-->
+
+</launch>
